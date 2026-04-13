@@ -24,6 +24,8 @@ public class AppConfig {
             @Qualifier("ollamaEmbeddingModel") EmbeddingModel embeddingModel) {
         return PgVectorStore.builder(jdbcTemplate, embeddingModel)
                 .dimensions(1536) // 1536-dim for OpenAI embedding model
+                .distanceType(PgVectorStore.PgDistanceType.COSINE_DISTANCE)
+                .indexType(PgVectorStore.PgIndexType.HNSW)
                 .build();
     }
 

@@ -142,7 +142,7 @@ public class OllamaController {
     @PostMapping("/product")
     public List<Document> getProducts(@RequestParam String text) {
         // return vectorStore.similaritySearch(text);
-        return vectorStore.similaritySearch(SearchRequest.builder().query(text).topK(2).build());
+        return vectorStore.similaritySearch(SearchRequest.builder().query(text).topK(5).build());
     }
 
 }
