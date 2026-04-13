@@ -11,12 +11,21 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class OpenAiController {
 
-    private final OpenAiChatModel chatModel;
-    private final ChatClient chatClient;
+    private OpenAiChatModel chatModel;
+    private ChatClient chatClient;
 
+    public OpenAiController() {}
+
+    // Way-1
     public OpenAiController(OpenAiChatModel chatModel) {
         this.chatModel = chatModel;
         this.chatClient = ChatClient.create(chatModel);
+    }
+
+    // Way-2
+    public OpenAiController(ChatClient.Builder builder) {
+        this.chatModel = OpenAiChatModel.builder().build();
+        this.chatClient = builder.build();
     }
 
     @GetMapping("/")
