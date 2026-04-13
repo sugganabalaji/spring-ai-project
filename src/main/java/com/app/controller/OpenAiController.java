@@ -5,17 +5,22 @@ import org.springframework.ai.chat.client.advisor.MessageChatMemoryAdvisor;
 import org.springframework.ai.chat.memory.ChatMemory;
 import org.springframework.ai.chat.model.ChatResponse;
 import org.springframework.ai.openai.OpenAiChatModel;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
+@RequestMapping("/openai")
 public class OpenAiController {
 
+    @Autowired
+    @Qualifier("openAiChatModel")
     private OpenAiChatModel chatModel;
     private ChatClient chatClient;
-    private ChatMemory chatMemory;
 
     public OpenAiController() {}
 
@@ -35,7 +40,6 @@ public class OpenAiController {
                         .builder(chatMemory)
                         .build()
                 ).build();
-        this.chatMemory = chatMemory;
     }
 
     @GetMapping("/")
@@ -43,17 +47,17 @@ public class OpenAiController {
         return "Ok.";
     }
 
-    @GetMapping("/openai/chat-model/{message}")
+    @GetMapping("/chat-model/{message}")
     public String chatWithOpenAi(@PathVariable String message) {
         return chatModel.call(message);
     }
 
-    @GetMapping("/openai/chat-client/{content}")
+    @GetMapping("/chat-client/{content}")
     public ResponseEntity<String> getOpenAiMessage(@PathVariable String content) {
         return ResponseEntity.ok(chatClient.prompt(content).call().content());
     }
 
-    @GetMapping("/openai/chat-client/metadata")
+    @GetMapping("/chat-client/metadata")
     public ResponseEntity<String> workWithChatResponseAndMetaData(@PathVariable String content) {
         ChatResponse chatResponse = chatClient.prompt(content)
                 .call()
@@ -68,7 +72,5 @@ public class OpenAiController {
 
         return ResponseEntity.ok(response);
     }
-
-
 
 }
