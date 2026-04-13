@@ -10,7 +10,6 @@ import org.springframework.ai.openai.OpenAiChatModel;
 import org.springframework.ai.vectorstore.SearchRequest;
 import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,14 +25,15 @@ public class OpenAiController {
     private OpenAiChatModel chatModel;
     private ChatClient chatClient;
     private EmbeddingModel embeddingModel;
+
     // public OpenAiController() {}
 
     // Way-1
     public OpenAiController(OpenAiChatModel chatModel
-            , @Qualifier("openAiEmbeddingModel") EmbeddingModel openAiEmbeddingModel) {
+            , EmbeddingModel embeddingModel) {
         this.chatModel = chatModel;
         this.chatClient = ChatClient.create(chatModel);
-        this.embeddingModel = openAiEmbeddingModel;
+        this.embeddingModel = embeddingModel;
     }
 
     // Way-2
