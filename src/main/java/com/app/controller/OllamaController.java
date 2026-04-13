@@ -4,20 +4,27 @@ import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.model.ChatResponse;
 import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.ai.chat.prompt.PromptTemplate;
+import org.springframework.ai.document.Document;
 import org.springframework.ai.embedding.EmbeddingModel;
 import org.springframework.ai.ollama.OllamaChatModel;
 import org.springframework.ai.retry.NonTransientAiException;
+import org.springframework.ai.vectorstore.SearchRequest;
+import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 @RestController
 @RequestMapping("/ollama")
 public class OllamaController {
+
+    @Autowired
+    private VectorStore vectorStore;
 
     @Qualifier("ollamaChatModel")
     private final OllamaChatModel chatModel;
@@ -131,4 +138,11 @@ public class OllamaController {
         double similarityScore = dotProduct *100 / (Math.sqrt(norm1) * Math.sqrt(norm2));
         return ResponseEntity.ok(similarityScore);
     }
+
+    @PostMapping("/product")
+    public List<Document> getProducts(@RequestParam String text) {
+        //return vectorStore.similaritySearch(text);
+        return vectorStore.similaritySearch(SearchRequest.builder().query(text).topK(2).build());
+    }
+
 }

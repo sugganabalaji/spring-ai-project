@@ -4,28 +4,35 @@ import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.model.ChatResponse;
 import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.ai.chat.prompt.PromptTemplate;
+import org.springframework.ai.document.Document;
 import org.springframework.ai.embedding.EmbeddingModel;
 import org.springframework.ai.openai.OpenAiChatModel;
+import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/openai")
 public class OpenAiController {
 
+    @Autowired
+    private VectorStore vectorStore;
+
     private OpenAiChatModel chatModel;
     private ChatClient chatClient;
-    @Autowired
-    @Qualifier("openAiEmbeddingModel")
     private EmbeddingModel embeddingModel;
     // public OpenAiController() {}
 
     // Way-1
-    public OpenAiController(OpenAiChatModel chatModel) {
+    public OpenAiController(OpenAiChatModel chatModel
+            , @Qualifier("openAiEmbeddingModel") EmbeddingModel openAiEmbeddingModel) {
         this.chatModel = chatModel;
         this.chatClient = ChatClient.create(chatModel);
+        this.embeddingModel = openAiEmbeddingModel;
     }
 
     // Way-2
@@ -91,6 +98,11 @@ public class OpenAiController {
     @PostMapping("/embedding")
     public float[] getEmbedding(@RequestParam String text) {
         return embeddingModel.embed(text);
+    }
+
+    @PostMapping("/product")
+    public List<Document> getProducts(@RequestParam String text) {
+        return vectorStore.similaritySearch(text);
     }
 
 }
