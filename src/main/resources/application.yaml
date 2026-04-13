@@ -1,6 +1,9 @@
 spring:
   application:
     name: spring-ai
+  servlet:
+    multipart:
+      max-file-size: 50MB
 
   ai:
     openai:
@@ -16,3 +19,24 @@ spring:
       embedding:
         options:
           model: mxbai-embed-large:latest
+
+  # docker postgreDB configuration
+  datasource:
+    url: jdbc:postgresql://localhost:5432/Dev
+    username: postgres
+    password: root
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+
+  sql:
+    init:
+      mode: always
+      schema-locations: classpath:db/schema.sql
+
+  main:
+    allow-bean-definition-overriding: true
+

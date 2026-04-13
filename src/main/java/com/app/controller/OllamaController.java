@@ -135,13 +135,13 @@ public class OllamaController {
             norm1 += Math.pow(embedding1[i], 2);
             norm2 += Math.pow(embedding2[i], 2);
         }
-        double similarityScore = dotProduct *100 / (Math.sqrt(norm1) * Math.sqrt(norm2));
+        double similarityScore = dotProduct * 100 / (Math.sqrt(norm1) * Math.sqrt(norm2));
         return ResponseEntity.ok(similarityScore);
     }
 
     @PostMapping("/product")
     public List<Document> getProducts(@RequestParam String text) {
-        //return vectorStore.similaritySearch(text);
+        // return vectorStore.similaritySearch(text);
         return vectorStore.similaritySearch(SearchRequest.builder().query(text).topK(2).build());
     }
 
