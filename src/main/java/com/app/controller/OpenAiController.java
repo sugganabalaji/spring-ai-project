@@ -71,7 +71,7 @@ public class OpenAiController {
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/recomand")
+    @PostMapping("/recomand")
     public String recomand(@RequestParam String type,
                            @RequestParam String year,
                            @RequestParam String lang) {
@@ -88,11 +88,9 @@ public class OpenAiController {
                 .content();
     }
 
-    @GetMapping("/embedding")
+    @PostMapping("/embedding")
     public float[] getEmbedding(@RequestParam String text) {
-
         return embeddingModel.embed(text);
-
     }
 
 }
