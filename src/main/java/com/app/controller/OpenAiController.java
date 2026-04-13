@@ -1,28 +1,26 @@
 package com.app.controller;
 
 import org.springframework.ai.chat.client.ChatClient;
-import org.springframework.ai.chat.client.advisor.MessageChatMemoryAdvisor;
-import org.springframework.ai.chat.memory.ChatMemory;
 import org.springframework.ai.chat.model.ChatResponse;
+import org.springframework.ai.chat.prompt.Prompt;
+import org.springframework.ai.chat.prompt.PromptTemplate;
+import org.springframework.ai.embedding.EmbeddingModel;
 import org.springframework.ai.openai.OpenAiChatModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/openai")
 public class OpenAiController {
 
-    @Autowired
-    @Qualifier("openAiChatModel")
     private OpenAiChatModel chatModel;
     private ChatClient chatClient;
-
-    public OpenAiController() {}
+    @Autowired
+    @Qualifier("openAiEmbeddingModel")
+    private EmbeddingModel embeddingModel;
+    // public OpenAiController() {}
 
     // Way-1
     public OpenAiController(OpenAiChatModel chatModel) {
@@ -31,7 +29,7 @@ public class OpenAiController {
     }
 
     // Way-2
-    public OpenAiController(ChatClient.Builder builder, ChatMemory chatMemory) {
+    /*public OpenAiController(ChatClient.Builder builder, ChatMemory chatMemory) {
         this.chatModel = OpenAiChatModel.builder().build();
         this.chatClient = builder
                 // explain more (remembers old messages)
@@ -40,7 +38,7 @@ public class OpenAiController {
                         .builder(chatMemory)
                         .build()
                 ).build();
-    }
+    }*/
 
     @GetMapping("/")
     public String ok() {
@@ -71,6 +69,30 @@ public class OpenAiController {
                 .getText();
 
         return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/recomand")
+    public String recomand(@RequestParam String type,
+                           @RequestParam String year,
+                           @RequestParam String lang) {
+        String template = """
+                 I Want to watch a {type} movie tonight with good rating,
+                 looking for moview around this year {year},
+                 The language im loooking for is {lang},
+                 suggest one specific movie and tell me the cast and length of the movie.
+                """;
+        PromptTemplate promptTemplate = new PromptTemplate(template);
+        Prompt prompt = promptTemplate.create();
+        return chatClient.prompt(prompt)
+                .call()
+                .content();
+    }
+
+    @GetMapping("/embedding")
+    public float[] getEmbedding(@RequestParam String text) {
+
+        return embeddingModel.embed(text);
+
     }
 
 }
