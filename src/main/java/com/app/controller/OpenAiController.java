@@ -1,6 +1,8 @@
 package com.app.controller;
 
 import org.springframework.ai.chat.client.ChatClient;
+import org.springframework.ai.chat.client.advisor.MessageChatMemoryAdvisor;
+import org.springframework.ai.chat.memory.ChatMemory;
 import org.springframework.ai.chat.model.ChatResponse;
 import org.springframework.ai.openai.OpenAiChatModel;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +15,7 @@ public class OpenAiController {
 
     private OpenAiChatModel chatModel;
     private ChatClient chatClient;
+    private ChatMemory chatMemory;
 
     public OpenAiController() {}
 
@@ -23,9 +26,16 @@ public class OpenAiController {
     }
 
     // Way-2
-    public OpenAiController(ChatClient.Builder builder) {
+    public OpenAiController(ChatClient.Builder builder, ChatMemory chatMemory) {
         this.chatModel = OpenAiChatModel.builder().build();
-        this.chatClient = builder.build();
+        this.chatClient = builder
+                // explain more (remembers old messages)
+                .defaultAdvisors(
+                        MessageChatMemoryAdvisor
+                        .builder(chatMemory)
+                        .build()
+                ).build();
+        this.chatMemory = chatMemory;
     }
 
     @GetMapping("/")
