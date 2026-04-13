@@ -5,3 +5,7 @@ spring:
   ai:
     openai:
       api-key: ${OPENAI_API_KEY}
+    ollama:
+      chat:
+        options:
+          model: mistral-large-3:675b-cloud
